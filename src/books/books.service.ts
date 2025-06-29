@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Book } from './chemas/book.schema';
 import * as mongoose from 'mongoose';
-
+import { Query } from 'express-serve-static-core';
 @Injectable()
 export class BooksService {
     constructor(
@@ -10,8 +10,25 @@ export class BooksService {
         private BookModel: mongoose.Model<Book>
     ){}
 
-    async listBook(): Promise <Book[]>{
-        let books = await this.BookModel.find();
+    async listBook(query:Query): Promise <Book[]>{
+        let search: any= query.search?
+            {
+                $or: [
+                    { title: { $regex: query.search, $options: 'i' }},
+                    { author: { $regex: query.search, $options: 'i' }}
+                ]
+            } : {};
+
+        // If limit is passed, apply pagination
+        if (query.limit) {
+            const resPerPage = Number(query.limit) || 2;
+            const currentPage = Number(query.page) || 1;
+            const skip = resPerPage * (currentPage - 1);
+
+            return await this.BookModel.find(search).limit(resPerPage).skip(skip);
+        }
+
+        let books = await this.BookModel.find(search);
         return books;
     }
 
