@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Book } from './chemas/book.schema';
 import * as mongoose from 'mongoose';
@@ -38,6 +38,10 @@ export class BooksService {
     }
 
     async getBookById(id: string): Promise<Book>{
+        let isValidId = mongoose.isValidObjectId(id);
+        if(!isValidId){
+            throw new BadRequestException("Please provide the valid Id");
+        }
         let book = await this.BookModel.findById(id);
         if (!book){
             throw new NotFoundException("Book data is not found");
