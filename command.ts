@@ -10,3 +10,7 @@
 // To make controller: nest g controller book
 // To make service: nest g service book --no-spec  (Here --no-spec is use for not to generate the test file)
 // To install the depenedency: npm i mongoose @nestjs/mongoose @nestjs/config --save
+
+// To create auth module: nest g module auth
+// To create auth controller without generate test file: nest g controller auth --no-spec
+// To create auth service without generate test file: nest g service auth --no-spec 
