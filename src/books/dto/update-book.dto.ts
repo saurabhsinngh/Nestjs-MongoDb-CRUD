@@ -20,6 +20,10 @@ export class UpdateBookDto {
     @IsNumber()
     readonly price: number;
 
+    @IsOptional()    
+    @IsEnum(CATEGORY, { message: 'Please enter the correct cotegory'})
+    readonly category: CATEGORY;
+        
     @IsEmpty({message: 'You can not pass the user Id' })    
     readonly user: User;
 }

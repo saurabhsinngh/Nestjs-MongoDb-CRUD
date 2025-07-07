@@ -34,7 +34,7 @@ export class BooksService {
     }
 
     async create(book: Book, user: User): Promise<Book>{
-        const data = Object.assign(Book, {user: user._id})
+        const data = Object.assign(book, {user: user._id})
         let response = await this.BookModel.create(data);
         return response;
     }
@@ -51,16 +51,37 @@ export class BooksService {
         return book;
     }
 
-    async update(id: string, book: Book): Promise<Book>{
-        let updated =  await this.BookModel.findByIdAndUpdate(id, book, {
+    // async update(id: string, book: Book, user: User): Promise<Book>{
+    //     const data = Object.assign(id, book, {user: user._id})
+
+    //     let updated =  await this.BookModel.findByIdAndUpdate(data, {
+    //         new: true,
+    //         runValidators: true
+    //     })
+
+    //     if (!updated) {
+    //         throw new NotFoundException("Book data is not found");
+    //     }
+        
+    //     return updated;
+    // }
+
+        async update(id: string, book: Book, user: User): Promise<Book> {
+        if (!user || !user._id) {
+            throw new BadRequestException('User is required');
+        }
+
+        const data = Object.assign({}, book, { user: user._id });
+
+        const updated = await this.BookModel.findByIdAndUpdate(id, data, {
             new: true,
-            runValidators: true
-        })
+            runValidators: true,
+        });
 
         if (!updated) {
             throw new NotFoundException("Book data is not found");
         }
-        
+
         return updated;
     }
 

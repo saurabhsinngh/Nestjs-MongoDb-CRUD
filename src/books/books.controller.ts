@@ -7,6 +7,7 @@ import { Query as ExpressQuery } from 'express-serve-static-core';
 
 import { title } from 'process';
 import { AuthGuard } from '@nestjs/passport';
+import { User } from '../schamas/user.schema';
 
 @Controller('book')
 export class BooksController {
@@ -29,10 +30,12 @@ export class BooksController {
         return this.bookService.getBookById(id)
     }
 
-    // @Put(':id')
-    // async updateBook(@Param('id') id: string, @Body() book: UpdateBookDto): Promise<Book>{
-    //     return this.bookService.update(id, book)
-    // }
+    @Put(':id')
+    @UseGuards(AuthGuard())
+    async updateBook(@Param('id') id: string, @Body() book: UpdateBookDto, @Req() req): Promise<Book>{
+        console.log("req.userLLLLLLLLLLLLLLL", req.user);
+        return this.bookService.update(id, book, req.user)
+    }
 
     @Delete(':id')
     async deleteBook(@Param('id') id: string): Promise<Book>{
