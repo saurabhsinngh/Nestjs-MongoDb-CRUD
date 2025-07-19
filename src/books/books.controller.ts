@@ -8,12 +8,17 @@ import { Query as ExpressQuery } from 'express-serve-static-core';
 import { title } from 'process';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '../schamas/user.schema';
+import { RolesGuards } from 'src/guards/role.guard';
+import { Role } from 'src/enums/role.enum';
+import { Roles } from 'src/decorators/role.decorator';
 
 @Controller('book')
 export class BooksController {
     constructor(private bookService: BooksService) { }
 
     @Get()
+    @Roles( Role.Admin, Role.Moderator)
+    @UseGuards(AuthGuard(), RolesGuards)
     async findAllBook(@Query() query:ExpressQuery): Promise<Book[]> {
         return this.bookService.listBook(query);
     }

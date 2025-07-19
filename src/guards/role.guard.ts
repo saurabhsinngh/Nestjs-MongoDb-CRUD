@@ -4,7 +4,6 @@ import { Observable } from "rxjs";
 import { ROLES_KEY } from "src/decorators/role.decorator";
 import { Role } from "src/enums/role.enum";
 
-
 @Injectable()
 export class RolesGuards implements CanActivate {
     constructor(private reflector: Reflector){}
@@ -14,7 +13,15 @@ export class RolesGuards implements CanActivate {
             context.getHandler(),
             context.getClass()
         ])
-        
+
+        if(!requiredRoles) return true;
+
+        const required = context.switchToHttp().getRequest();
+        const user = required.user;
+        return matchesRoles(requiredRoles, user?.role)
     }
-    
 }
+
+    function matchesRoles(requiredRoles: string[], userRoles: string[]){
+        return requiredRoles.some((role: string) => userRoles.includes(role));
+    }
