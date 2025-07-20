@@ -16,9 +16,14 @@ export class AuthService {
     ) { }
 
     async signUpUser(signUpDto: SignUpDto): Promise<{ token: string }> {
-        let { name, email, password } = signUpDto;
+        let { name, email, password, role } = signUpDto;
         let hashedPassword = await bcrypt.hash(password, 10);
-        let dataToUserSignUp = { name, email, password: hashedPassword }
+        let dataToUserSignUp = { name, email, password: hashedPassword, role }
+
+        let existUser = await this.userModel.findOne({email: email});
+        if(existUser){
+            throw new HttpException("User already exists", HttpStatus.CONFLICT);
+        }
 
         let user = await this.userModel.create(dataToUserSignUp);
 
